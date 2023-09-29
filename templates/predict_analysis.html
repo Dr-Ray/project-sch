@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Train model</title>
+    <link rel="stylesheet" href="{{url_for('stylesheet', path='/style.css')}}">
+    <style>
+        :root {
+            --black: black;
+            --primary: blue;
+            --blue: aqua;
+            --white:#fff;
+        }
+        .hidden {
+            visibility: hidden;
+            display: none;
+        }
+        .text-upper {
+            text-transform: uppercase;
+        }
+        .text-xl {
+            font-size: x-large;
+        }
+        .bg-blue { 
+            background-color: var(--blue);
+        }
+        .content {
+            overflow-y: auto;
+            padding: 0 8px;
+        }
+        .my-4 {
+            margin: 8px 0;
+        }
+        .mt-4 {
+            margin-top: 18px;
+        }
+        .btn-upload {
+            width: 180px;
+        }
+        .thick {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="r-app d-col">
+        <div class="nav h-row justify-between">
+            <div class="logo p-2 text-xl">&#9776;</div>
+            <div class="p-2 text-xl">Predict</div>
+        </div>
+        <div class="sidebar hidden"></div>
+        <div class="content h-full centered text-center">
+            <div class="responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <th>Class</th>
+                        <th>Precision</th>
+                        <th>Recall</th>
+                        <th>F1 score</th>
+                        <th>Support</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0</td>
+                            <td>0.95</td>
+                            <td>0.92</td>
+                            <td>0.93</td>
+                            <td>288</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>0.95</td>
+                            <td>0.92</td>
+                            <td>0.93</td>
+                            <td>288</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>0.95</td>
+                            <td>0.92</td>
+                            <td>0.93</td>
+                            <td>288</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>0.95</td>
+                            <td>0.92</td>
+                            <td>0.93</td>
+                            <td>288</td>
+                        </tr>
+                        <tr>
+                            <td>Accuracy</td>
+                            <td></td>
+                            <td></td>
+                            <td>0.89</td>
+                            <td>1168</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Train model</title>
+    <link rel="stylesheet" href="{{url_for('stylesheet', path='/style.css')}}">
+    <style>
+        :root {
+            --black: black;
+            --primary: blue;
+            --blue: aqua;
+            --white:#fff;
+        }
+        .hidden {
+            visibility: hidden;
+            display: none;
+        }
+        .text-upper {
+            text-transform: uppercase;
+        }
+        .text-xl {
+            font-size: x-large;
+        }
+        .bg-blue { 
+            background-color: var(--blue);
+        }
+        .content {
+            overflow-y: auto;
+            padding: 0 8px;
+        }
+        .my-4 {
+            margin: 12px 0;
+        }
+        .my-16 {
+            margin: 32px 0;
+        }
+        .mt-4 {
+            margin-top: 18px;
+        }
+        .btn-upload {
+            width: 180px;
+        }
+        .thick {
+            font-weight: bold;
+        }
+        .form-group {
+            display: block;
+        }
+        .form-control {
+            padding:15px 10px;
+            border-radius: 5px;
+            border: none;
+            outline: 1px solid black;
+            width: 100%;
+        }
+        .form-control:hover {
+            outline: none;
+            box-shadow: 2px 0 8px blue;
+        }
+        .form-control:focus {
+            outline: none;
+            box-shadow: 2px 0 8px blue;
+        }
+        .w-full {
+            width: 100%;
+        }
+        label {
+            margin:15px 0;
+            padding: 5px;
+            border-top-right-radius: 8px;
+            border-top-left-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="r-app d-col">
+        <div class="nav h-row justify-between">
+            <div class="logo p-2 text-xl">&#9776;</div>
+            <div class="p-2 text-xl">Realtime data</div>
+        </div>
+        <div class="sidebar hidden"></div>
+        <div class="content h-full centered">
+            <h2>Simulate Realtime</h2>
+            <form class="form" action="/realtime/analysis">
+                <div class="form-group my-16">
+                    <input type="number" name="num_channels" id="num_channels" class="form-control" placeholder="Number of channels">
+                </div>
+                <div class="form-group my-16">
+                    <input type="number" name="num_gestures" id="num_gestures" class="form-control" placeholder="Number of gestures">
+                </div>
+                <div class="form-group my-16">
+                    <input type="text" name="g_labels" id="g_labels" class="form-control" placeholder="Gesture Labels">
+                </div>
+                <div class="form-group my-16">
+                    <input type="number" name="s_freq" id="s_freq" class="form-control" placeholder="Sample frequency">
+                </div>
+                <button class="btn btn-primary w-full my-4" type="submit">Generate data</button>
+                <div class="form-foot">
+                    <span class="thick mt-4">Note</span>: While entering your gesture labels, use "," to seperate each label
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html> 
