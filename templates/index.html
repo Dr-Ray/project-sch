@@ -132,7 +132,7 @@
     <div class="r-app d-col">
         <div class="nav h-row justify-between">
             <div class="logo thick p-2 text-xl">&#9776;</div>
-            <div class="p-2 text-xl">Train Model</div>
+            <div class="p-2 text-xl">Model {{current_model}}</div>
         </div>
         <div class="sidebar"></div>
         <div class="content h-full centered">
@@ -143,8 +143,8 @@
                             Train Model
                         </div>
                     </a>
-                    <a href="#" class="s-hover">
-                        <div class=" w-200 p-2 text-center h-80 d-col justify-center">
+                    <a href="/select_model" class="s-hover">
+                        <div class="w-200 p-2 text-center h-80 d-col justify-center">
                             Select model
                         </div>
                     </a>
@@ -171,6 +171,10 @@
     </div>
 
     <script>
+        let model = window.location.search.split('=')[1]
+        if(model){
+            console.log(model.replaceAll('%20',' '))
+        }
         // let mhv = document.querySelectorAll('.s-hover');
         // for( let i=0; i<=mhv.length; i++) {
         //     mhv[i].addEventListener('mouseover', ()=> {
