@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Train model</title>
+    <title>cSelect model</title>
     <link rel="stylesheet" href="{{url_for('stylesheet', path='/styles.css')}}">
     <style>
         :root {
@@ -72,6 +72,7 @@
             border-top-left-radius: 8px;
         }
     </style>
+    <script type="text/javascript" src="{{url_for('js', path='/index.js')}}"></script>
 </head>
 <body>
     <div class="r-app d-col">
@@ -81,9 +82,9 @@
         </div>
         <div class="sidebar hidden"></div>
         <div class="content h-full centered">
-            <h2>Select Model</h2>
             <form id="selectmodel">
                 <div class="form-group">
+                    <label for="model" class="thick p-2">Select Model</label>
                     <select name="model" id="model" class="form-control">
                         <option value="cnn" selected>Convolutional Neural Network (CNN)</option>
                         <option value="ann">Artificial Neural Network (ANN)</option>
@@ -102,38 +103,6 @@
     </div>
 
     <script>
-        var network = {
-            xhr_request : (body, callback) => {
-                var xhr = new XMLHttpRequest();
-                xhr.open(body.method, body.url);
-                if(body.content_type == "application/json") {
-                    xhr.setRequestHeader("content-type", "application/json");
-                }
-                xhr.onload = (e) => {
-                    if(xhr.status == 200) {
-                        var response = xhr.responseText;
-                        callback(response, null);
-                    }else {
-                        callback(null, xhr.responseText)
-                    }
-                }
-                if(body.method == "POST"){
-                    xhr.send(body.data);
-                }else{
-                    xhr.send();
-                }
-            },
-
-            fetch_request : (body, callback)=> {
-                fetch(body.url, {
-                    method:body.method,
-                    body:body.data
-                })
-                .then(response=>response.json())
-                .then(resp => callback(resp, null))
-                .catch(err => callback(null, err))
-            }
-        }
         document.querySelector('#selectmodel').onsubmit = (e)=> {
             e.preventDefault();
             let resp = network.xhr_request({

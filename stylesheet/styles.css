@@ -89,10 +89,13 @@ a {
     border-radius: 3px;
     border: none;
     outline: none;
+    transition: all .3s ease-in-out;
+    background-color:lightgrey;
 }
 .btn:hover {
     cursor: pointer;
     background-color: #1323ff;
+    color: #fff;
 }
 .btn-primary {
     background-color: blue;

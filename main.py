@@ -1,14 +1,22 @@
-from fastapi import FastAPI, Request, File, UploadFile
+from fastapi import FastAPI, Request, File, UploadFile, Form
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
 from enum import Enum
 from pydantic import BaseModel
+from typing import Annotated
 
 import numpy as np
 import pandas as pd
 from scipy import signal
+
+
+class simRealreq(BaseModel):
+    channels : int
+    gestures_count : int
+    gesture_labels : str
+    sample_frequency : int
 
 class SelectModel(str, Enum):
     svm_model = "svm"
@@ -68,7 +76,15 @@ class Mymodel:
             filtered_signal_rectified.append(self.rectify(self.bandpass_filter(data[label], l_freq, h_freq)))
 
 
-        
+class Simulation:
+    def __init__(self, chnls, no_ges, ges_labels, sample_freq):
+        self.channels = chnls
+        self.gestures = no_ges
+        self.gesture_labels = ges_labels
+        self.sample_frequency = sample_freq
+    
+    def generate_emg(self, dist='gaussian'):
+        pass
 
 
 # linode password proj3ctk@r3n@i12322
@@ -78,6 +94,7 @@ ai_model = Mymodel('CNN')
 app = FastAPI()
 app.mount("/stylesheet", StaticFiles(directory="stylesheet"), name="stylesheet")
 app.mount("/images", StaticFiles(directory="images"), name="images")
+app.mount("/js", StaticFiles(directory="js"), name="js")
 
 template = Jinja2Templates(directory="templates")
 
@@ -116,6 +133,13 @@ def realtime(request: Request):
 @app.get('/realtime/analysis', response_class=HTMLResponse)
 def realtime_analysis(request: Request):
     return template.TemplateResponse("real_analysis.html", {"request":request})
+
+
+@app.post('/realtime/analysis')
+def realtime_analysis(Simdata: simRealreq):
+    return  {"data":Simdata}
+
+
 
 @app.get('/select_model', response_class=HTMLResponse)
 def select_model(request: Request):

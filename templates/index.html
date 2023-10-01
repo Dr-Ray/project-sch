@@ -149,6 +149,7 @@
             overflow: visible;
         }
     </style>
+    <script type="text/javascript" src="{{url_for('js', path='/index.js')}}"></script>
 </head>
 <body>
     <div class="r-app d-col">
@@ -160,14 +161,14 @@
         <div class="content h-full centered" id="main">
             <div class="picker mb-8">
                 <div class="row bb-line">
-                    <a href="/train" class="s-hover">
-                        <div class="br-line w-200 p-2 text-center d-col h-80 justify-center">
-                            Train Model
+                    <a href="/select_model" class="s-hover">
+                        <div class="br-line w-200 p-2 text-center h-80 d-col justify-center">
+                            Select model
                         </div>
                     </a>
-                    <a href="/select_model" class="s-hover">
-                        <div class="w-200 p-2 text-center h-80 d-col justify-center">
-                            Select model
+                    <a href="/train" class="s-hover">
+                        <div class="w-200 p-2 text-center d-col h-80 justify-center">
+                            Train Model
                         </div>
                     </a>
                 </div>
@@ -195,21 +196,8 @@
     <script>
         let parent = document.querySelector('#main');
 
-        function addElement(tag, parent, optional={}){
-            var elem = document.createElement(tag);
-            elem.value = 'hello world';
-            if(optional){
-                elem.setAttribute('id', optional.id)
-                elem.setAttribute('class', optional.class)
-            }
-            parent.appendChild(elem);
-
-            return elem;
-        }
-
         let model = window.location.search.split('=')[1]
         if(model){
-            console.log()
             var el = addElement('div', parent, {
                 "class":"text-center notif",
                 "id":"model_select_"
@@ -224,15 +212,6 @@
             }, 1000);
         }
         
-        // let mhv = document.querySelectorAll('.s-hover');
-        // for( let i=0; i<=mhv.length; i++) {
-        //     mhv[i].addEventListener('mouseover', ()=> {
-        //         mhv[i].classList.add('active')
-        //     });
-        //     mhv[i].addEventListener('mouseout', ()=> {
-        //         mhv[i].classList.remove('active');
-        //     });
-        // }
     </script>
 </body>
 </html>
