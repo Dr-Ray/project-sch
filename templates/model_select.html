@@ -134,9 +134,6 @@
                 .catch(err => callback(null, err))
             }
         }
-
-        
-
         document.querySelector('#selectmodel').onsubmit = (e)=> {
             e.preventDefault();
             let resp = network.xhr_request({

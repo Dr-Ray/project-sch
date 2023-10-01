@@ -1,10 +1,14 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, File, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
 from enum import Enum
 from pydantic import BaseModel
+
+import numpy as np
+import pandas as pd
+from scipy import signal
 
 class SelectModel(str, Enum):
     svm_model = "svm"
@@ -19,12 +23,53 @@ class Mymodel:
     def __init__(self, model):
         self.model = model
     
+    def read_file(self, filename):
+        pass
+    
     def get_model(self):
-        print(self.model)
         return self.model
     
     def set_model(self, model):
         self.model = model
+    
+    def train_model(self, x_train, y_train):
+        if(self.model == "svm"):
+            return "training svm model for classification"
+        if(self.model == "ann"):
+            return "training ann model for classification"
+        if(self.model == "cnn"):
+            return "training cnn model for classification"
+        else:
+            return "No model selected for training"
+    
+    # A band pass filter 
+    def bandpass_filter(self, input_signal, lp_freq, hp_freq, sampling_rate=200, order=4):
+        nyquist = 0.5 * sampling_rate
+        low = lp_freq / nyquist
+        high = hp_freq / nyquist
+        
+        b, a = signal.butter(order, [low, high], 'bandpass', analog=False)
+        y = signal.filtfilt(b, a, input_signal, axis=0)
+        
+        return y
+    
+    def rectify(self, signal):
+        return abs(signal)
+    
+    def preprocess(self, data, l_freq, h_freq):
+        # Noise removal and filter signal with cut off frquencies 20hz and 60hz
+        filtered_signal = []
+
+        # Rectify fullwave
+        filtered_signal_rectified = []
+
+        for label in data.columns[:-1]:
+            filtered_signal.append(bandpass_filter(data[label], l_freq, h_freq))
+            filtered_signal_rectified.append(self.rectify(self.bandpass_filter(data[label], l_freq, h_freq)))
+
+
+        
+
 
 # linode password proj3ctk@r3n@i12322
 
@@ -43,6 +88,10 @@ def home(request: Request):
 @app.get('/train', response_class=HTMLResponse)
 def train(request: Request):
     return template.TemplateResponse("train.html", {"request":request})
+
+@app.post('/train/dataset')
+def train(file: UploadFile):
+    return {"filename":file.filename}
 
 @app.get('/train/view', response_class=HTMLResponse)
 def train_view(request: Request):
@@ -98,5 +147,6 @@ def selected_model(model: SelectModel):
         ai_model.set_model("SVM")
         return {"selected_model":"Support vector machine"}
     
-    else:
+    if model.value == "cnn":
+        ai_model.set_model("CNN")
         return {"selected_model":"Convolutional Neural Network"}
