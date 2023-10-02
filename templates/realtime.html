@@ -83,7 +83,7 @@
         <div class="sidebar hidden"></div>
         <div class="content h-full centered">
             <h2>Simulate Realtime</h2>
-            <form class="form">
+            <form class="form" id="Simulate">
                 <div class="form-group my-16">
                     <label for="mother long" class="thick">Number of Channels</label>
                     <input type="number" name="num_channels" id="num_channels" class="form-control" placeholder="xxxx">
@@ -91,14 +91,19 @@
 
                 
                 <div class="form-group my-16">
-                    <label for="mother long" class="thick">Number of gestures</label>
-                    <input type="number" name="num_gestures" id="num_gestures" class="form-control" placeholder="xxx">
+                    <label for="mother long" class="thick">Signal duration</label>
+                    <input type="number" name="duration" id="duration" class="form-control" placeholder="1.0">
+                </div>
+
+                <div class="form-group my-16">
+                    <label for="mother long" class="thick">Signal noise</label>
+                    <input type="number" name="noise" id="noise" class="form-control" placeholder="0.1">
                 </div>
 
                 
                 <div class="form-group my-16">
                     <label for="mother long" class="thick">Gesture labels</label>
-                    <input type="text" name="g_labels" id="g_labels" class="form-control" placeholder="Label, Label, ....">
+                    <input type="text" name="g_labels" id="g_labels" class="form-control" placeholder="Label, Label, etc....">
                 </div>
 
                 
@@ -114,5 +119,30 @@
             </form>
         </div>
     </div>
+    <script>
+        document.querySelector('#Simulate').onsubmit = (e)=> {
+            e.preventDefault();
+            var data = {
+                "channels": (e.target.num_channels.value),
+                "noise": (e.target.noise.value),
+                "duration": (e.target.duration.value),
+                "gesture_labels": e.target.g_labels.value,
+                "sample_frequency": (e.target.s_freq.value)
+            }
+
+            var req_body = {
+                url: "/realtime/simulate/",
+                method: "POST",
+                data:JSON.stringify(data),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
+
+            let resp = network.fetch_request(req_body, (response)=> {
+                console.log(response);
+            });
+        }
+    </script>
 </body>
 </html> 

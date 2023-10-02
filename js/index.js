@@ -45,6 +45,7 @@ var network = {
 
     fetch_request : (body, callback)=> {
         fetch(body.url, {
+            headers: body.headers,
             method:body.method,
             body:body.data
         })

@@ -14,7 +14,8 @@ from scipy import signal
 
 class simRealreq(BaseModel):
     channels : int
-    gestures_count : int
+    noise: float
+    duration : float
     gesture_labels : str
     sample_frequency : int
 
@@ -77,19 +78,32 @@ class Mymodel:
 
 
 class Simulation:
-    def __init__(self, chnls, no_ges, ges_labels, sample_freq):
-        self.channels = chnls
-        self.gestures = no_ges
-        self.gesture_labels = ges_labels
-        self.sample_frequency = sample_freq
+    def __init__(self):
+        self.channels = 8
+        self.noise = 0.5
+        self.duration = 10
+        self.gesture_labels = "Fist"
+        self.sample_frequency = 200
+        self.emg_signal = []
     
-    def generate_emg(self, dist='gaussian'):
-        pass
-
+    def set_simulation_data(self, chnls, duration, sm_frq, noise, label):
+        self.channels = chnls
+        self.noise = noise
+        self.duration = duration
+        self.sample_frequency = sm_frq
+        self.gesture_labels = label
+    
+    def generate_emg(self):
+        self.emg_signal = nk.emg_simulate(duration=self.duration, burst_number=3, burst_duration=1.0, sampling_rate=self.sample_frequency, noise=self.nosie)
+        return self.emg_signal
+    
+    def get_signal(self):
+        return self.emg_signal 
 
 # linode password proj3ctk@r3n@i12322
 
 ai_model = Mymodel('CNN')
+simul = Simulation()
 
 app = FastAPI()
 app.mount("/stylesheet", StaticFiles(directory="stylesheet"), name="stylesheet")
@@ -135,9 +149,12 @@ def realtime_analysis(request: Request):
     return template.TemplateResponse("real_analysis.html", {"request":request})
 
 
-@app.post('/realtime/analysis')
-def realtime_analysis(Simdata: simRealreq):
-    return  {"data":Simdata}
+@app.post('/realtime/simulate')
+def realtime_analysis(data: simRealreq):
+    simul.set_simulation_data(data.channels, data.duration, data.sample_frequency, data.noise, data.gesture_labels)
+    signal = simul.generate_emg()
+    
+    return  {"signal":signal}
 
 
 
