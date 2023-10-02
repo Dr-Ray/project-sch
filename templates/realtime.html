@@ -86,30 +86,30 @@
             <form class="form" id="Simulate">
                 <div class="form-group my-16">
                     <label for="mother long" class="thick">Number of Channels</label>
-                    <input type="number" name="num_channels" id="num_channels" class="form-control" placeholder="xxxx">
+                    <input type="number" name="num_channels" id="num_channels" class="form-control" placeholder="1" required>
                 </div>
 
                 
                 <div class="form-group my-16">
                     <label for="mother long" class="thick">Signal duration</label>
-                    <input type="number" name="duration" id="duration" class="form-control" placeholder="1.0">
+                    <input type="number" name="duration" id="duration" class="form-control" placeholder="1.0" required>
                 </div>
 
                 <div class="form-group my-16">
                     <label for="mother long" class="thick">Signal noise</label>
-                    <input type="number" name="noise" id="noise" class="form-control" placeholder="0.1">
+                    <input type="number" name="noise" step="0.01"  id="noise" class="form-control" placeholder="0.1" required>
                 </div>
 
                 
                 <div class="form-group my-16">
-                    <label for="mother long" class="thick">Gesture labels</label>
-                    <input type="text" name="g_labels" id="g_labels" class="form-control" placeholder="Label, Label, etc....">
+                    <label for="mother long" class="thick">Gesture label</label>
+                    <input type="text" name="g_labels" id="g_labels" class="form-control" placeholder="Label" required>
                 </div>
 
                 
                 <div class="form-group my-16">
                     <label for="mother long" class="thick">Sampling frequency</label>
-                    <input type="number" name="s_freq" id="s_freq" class="form-control" placeholder="Sample frequency">
+                    <input type="number" name="s_freq" id="s_freq" class="form-control" placeholder="Sample frequency" required>
                 </div>
 
                 <button class="btn btn-primary w-full my-4" type="submit">Generate data</button>
@@ -140,7 +140,7 @@
             }
 
             let resp = network.fetch_request(req_body, (response)=> {
-                console.log(response);
+                window.location = response.redirect_link;
             });
         }
     </script>

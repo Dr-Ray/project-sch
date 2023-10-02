@@ -1,6 +1,5 @@
 function addElement(tag, parent, optional={}){
     var elem = document.createElement(tag);
-    elem.value = 'hello world';
     if(optional){
         elem.setAttribute('id', optional.id)
         elem.setAttribute('class', optional.class)
@@ -20,6 +19,28 @@ function effect(elems, event, d_class) {
         });
     }
 }
+
+function getElement(selector) {
+    var pattern = /^#/;
+    if(pattern.test(selector)) {
+        return document.querySelector(selector);
+    }else {
+        return document.querySelectorAll(selector);
+    }
+}
+
+function range_(start, stop) {
+    let arr = [];
+    for(let i=0; i<stop; ++i) {
+        arr.push(i);
+    }
+    return arr
+}   
+
+function getRndInteger(min, max) {
+    return Math.floor(Math.random() * (max - min) ) + min;
+}
+        
 
 var network = {
     xhr_request : (body, callback) => {

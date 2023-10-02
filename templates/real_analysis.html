@@ -82,6 +82,7 @@
     </style>
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script> -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="text/javascript" src="{{url_for('js', path='/index.js')}}"></script>
 </head>
 <body>
     <div class="r-app d-col">
@@ -98,35 +99,50 @@
                 </div>
                 <form class="form">
                     <div class="form-group my-16">
-                        <label for="">Predicted class</label>
+                        <label for="" class="thick">Predicted class</label>
                         <input type="text" value="" class="form-control" placeholder="Predicted class" readonly>
                     </div>
 
                     <div class="form-group my-16">
-                        <label for="">Actual class</label>
-                        <input type="text" value="" class="form-control" placeholder="Actual class" readonly>
+                        <input type="hidden" id="data" value="{{data.data}}" class="form-control" readonly>
+                    </div>
+
+                    <div class="form-group my-16">
+                        <label for="" class="thick">Actual class</label>
+                        <input type="text" value="{{data.label}}" class="form-control" placeholder="Actual class" readonly>
                     </div>
                 </form>
             </div>
         </div>
     </div>
     <script>
-        function getRndInteger(min, max) {
-            return Math.floor(Math.random() * (max - min) ) + min;
+        function getElement(selector) {
+            var pattern = /^#/;
+            if(pattern.test(selector)) {
+                return document.querySelector(selector);
+            }else {
+                return document.querySelectorAll(selector);
+            }
         }
-        let x, y = [];
+        let x, y;
 
-        for(let i=1;i<=2909;i++) {
-            y.push(getRndInteger(-100, 120))
-        }
+        network.xhr_request({
+            url:'/realtime/simulate_data',
+            method:'GET'
+        },(resp, _)=>{
+                var response = JSON.parse(resp);
+                y = response;
+                x = range_(0, y.length);
+                
 
-        const data = [
-            {x: x, y: y, mode:"lines"}
-        ];
+                const data = [
+                    {"y": y, "x": x, mode:"lines"}
+                ];
 
-        console.log(y.length)
-        const layout = {title: "amplitude time graph"};
-        Plotly.newPlot("graph", data, layout);
+                const layout = {title: "Amplitude time graph"};
+                Plotly.newPlot("graph", data, layout);
+            }
+        );
     </script>
 </body>
 </html> 

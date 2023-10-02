@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request, File, UploadFile, Form
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+
 from pathlib import Path
 from enum import Enum
 from pydantic import BaseModel
@@ -10,8 +11,7 @@ from typing import Annotated
 import numpy as np
 import pandas as pd
 from scipy import signal
-
-
+import neurokit2 as nk
 class simRealreq(BaseModel):
     channels : int
     noise: float
@@ -76,7 +76,6 @@ class Mymodel:
             filtered_signal.append(bandpass_filter(data[label], l_freq, h_freq))
             filtered_signal_rectified.append(self.rectify(self.bandpass_filter(data[label], l_freq, h_freq)))
 
-
 class Simulation:
     def __init__(self):
         self.channels = 8
@@ -94,11 +93,11 @@ class Simulation:
         self.gesture_labels = label
     
     def generate_emg(self):
-        self.emg_signal = nk.emg_simulate(duration=self.duration, burst_number=3, burst_duration=1.0, sampling_rate=self.sample_frequency, noise=self.nosie)
+        self.emg_signal = nk.emg_simulate(duration=self.duration, burst_number=3, burst_duration=1.0, sampling_rate=self.sample_frequency, noise=self.noise)
         return self.emg_signal
     
     def get_signal(self):
-        return self.emg_signal 
+        return self.emg_signal
 
 # linode password proj3ctk@r3n@i12322
 
@@ -121,7 +120,7 @@ def train(request: Request):
     return template.TemplateResponse("train.html", {"request":request})
 
 @app.post('/train/dataset')
-def train(file: UploadFile):
+def train(file: Annotated[UploadFile, File()]):
     return {"filename":file.filename}
 
 @app.get('/train/view', response_class=HTMLResponse)
@@ -146,17 +145,17 @@ def realtime(request: Request):
 
 @app.get('/realtime/analysis', response_class=HTMLResponse)
 def realtime_analysis(request: Request):
-    return template.TemplateResponse("real_analysis.html", {"request":request})
-
+    return template.TemplateResponse("real_analysis.html", {"request":request, "data":simul.get_signal()})
 
 @app.post('/realtime/simulate')
 def realtime_analysis(data: simRealreq):
     simul.set_simulation_data(data.channels, data.duration, data.sample_frequency, data.noise, data.gesture_labels)
+    return  { "redirect_link":"/realtime/analysis" }
+
+@app.get('/realtime/simulate_data')
+def simulate_data():
     signal = simul.generate_emg()
-    
-    return  {"signal":signal}
-
-
+    return signal.tolist()
 
 @app.get('/select_model', response_class=HTMLResponse)
 def select_model(request: Request):
