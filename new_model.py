@@ -1,19 +1,7 @@
-from fastapi import FastAPI, Request, File, UploadFile, Form
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-
-from pathlib import Path
-from enum import Enum
-from pydantic import BaseModel
-from typing import Annotated
-from secrets import token_hex
-
 import numpy as np
 import pandas as pd
 from scipy import signal
 import neurokit2 as nk
-import os
 import joblib
 
 class Mymodel:

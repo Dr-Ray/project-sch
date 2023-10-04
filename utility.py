@@ -1,4 +1,5 @@
 import os
+from secrets import token_hex
 class Utility:
     def __init__(self):
         self.allowed_type = ['csv', 'json', 'xlsx', 'txt']
@@ -18,8 +19,11 @@ class Utility:
                         f.write(file_content)
                         return True
             else:
-                new_folder = os.mkdir(folder)
-                with open(f"{new_folder}/{filename}", 'wb') as f:
-                    f.write(file_content)
-                    return True
+                os.mkdir(folder)
+                if(os.path.exists(folder)):
+                    with open(f"{folder}/{filename}", 'wb') as f:
+                        f.write(file_content)
+                        return True
+                return False
+
         return False

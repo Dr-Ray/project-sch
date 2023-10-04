@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home | </title>
+    <title>Home | home</title>
+    <link rel="stylesheet" href="{{url_for('stylesheet', path='/styles.css')}}">
     <style>
         /* reset css */
         *, html {
@@ -119,35 +120,7 @@
             overflow-y: auto;
             padding: 0 8px;
         }
-        @media screen and (max-width: 600px) {
-            .w-600 {
-                width: 100%;
-            }
-            .w-200 {
-                width: 120px;
-            }
-        }
 
-        .content{
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        .notif {
-            position: absolute;
-            top:30%;
-            right: -600px;
-            padding: 15px 10px;
-            background-color:rgba(0, 0, 0, .8);
-            color: #fff;
-            width: 180px;
-            overflow: hidden;
-            transition: all 0.8s ease-in-out;
-        }
-        .slideIn {
-            right: 5px;
-            overflow: visible;
-        }
     </style>
     <script type="text/javascript" src="{{url_for('js', path='/index.js')}}"></script>
 </head>
@@ -196,20 +169,10 @@
     <script>
         let parent = document.querySelector('#main');
 
-        let model = window.location.search.split('=')[1]
-        if(model){
-            var el = addElement('div', parent, {
-                "class":"text-center notif",
-                "id":"model_select_"
-            });
-            el.innerHTML = model.replaceAll('%20',' ');
+        let model = window.location.search.split('=')[1], message = model.replaceAll('%20',' ');
 
-            setTimeout(()=>{
-                el.classList.add('slideIn');
-                setTimeout(()=>{
-                    el.classList.remove('slideIn');
-                }, 3000);
-            }, 1000);
+        if(model){
+            notification(parent, message, 3000);
         }
         
     </script>

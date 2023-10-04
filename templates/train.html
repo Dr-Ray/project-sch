@@ -112,15 +112,11 @@
         let inp = getElement('#file');
         let parent_ = getElement('#main');
 
-        let train_settings = `<form class="form" id="settings">
+        let train_settings = `
+            <form class="form" id="settings">
                 <div class="form-group my-16">
                     <label for="mother long" class="thick">Percentage for training</label>
-                    <input type="number" name="p_size" id="p_size" class="form-control" min="50" max="90" placeholder="1" required>
-                </div>
-                
-                <div class="form-group my-16">
-                    <label for="mother long" class="thick">Gesture label</label>
-                    <input type="text" name="g_labels" id="g_labels" class="form-control" placeholder="Label" required>
+                    <input type="number" name="p_size" id="p_size" class="form-control" min="50" max="90" placeholder="50" required>
                 </div>
 
                 <button class="btn btn-primary w-full my-4" type="submit">Train Model</button>
@@ -131,38 +127,51 @@
         
         getElement('#submit_dataset').onsubmit = (e) => {
             e.preventDefault();
-            getElement('#main').innerHTML = train_settings;
-            // let form_ = new FormData(e.currentTarget);
-            // network.xhr_request({
-            //     url:'/train/dataset',
-            //     method:'POST',
-            //     headers: {
-            //         content_type:'multipart/form-data',
-            //     },
-            //     data:form_
-            // }, (resp, err)=> {
-            //         var response = JSON.parse(resp);
-            //         if(response.success) {
-            //             var el = addElement('div', parent_, {
-            //                 "class":"text-center notif",
-            //                 "id":"model_notif_"
-            //             });
-            //             el.innerHTML = "Dataset uploaded successfully";
-
-            //             setTimeout(()=>{
-                            
-            //                 getElement('#main').classList.remove('text-center');
-            //                 el.classList.add('slideIn');
-            //                 setTimeout(()=>{
-            //                     el.classList.remove('slideIn');
-            //                 }, 3000);
-            //             }, 1000);
+            let form_ = new FormData(e.currentTarget);
+            network.xhr_request({
+                url:'/train/dataset',
+                method:'POST',
+                headers: {
+                    content_type:'multipart/form-data',
+                },
+                data:form_
+            }, (resp, err)=> {
+                    var response = JSON.parse(resp);
+                    if(response.success) {
+                        notification(parent_, "Dataset uploaded successfully", 3000);
+                        getElement('#main').innerHTML = train_settings;
                         
-            //         }
-            //     });
-            // }
-        
+                    }else{
+                        notification(parent_, response.message, 3000);
+                    }
+                });
+            }
+
+        try {
+            getElement('#settings').onsubmit = (e) => {
+                e.preventDefault();
+                var data = {
+                    "p_size": (e.target.p_size.value)
+                }
+
+                var req_body = {
+                    url: "/train/analysis/",
+                    method: "POST",
+                    data:JSON.stringify(data),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                }
+
+                let resp = network.fetch_request(req_body, (response)=> {
+                    console.log(resp);
+                    // window.location = response.redirect_link;
+                });
+            }
+        } catch (error) {
+            console.log(error)
         }
+        
         inp.onchange = (e)=> {
             let {name, size, type} = get_file_details(e.target.files[0]);
 

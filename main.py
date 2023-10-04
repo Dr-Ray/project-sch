@@ -5,10 +5,10 @@ from fastapi.templating import Jinja2Templates
 
 from enum import Enum
 from pydantic import BaseModel
-from secrets import token_hex
 
 from simulation_model import Simulation
 from new_model import Mymodel
+from utility import Utility
 
 
 class simRealreq(BaseModel):
@@ -30,6 +30,7 @@ class SelectModel(str, Enum):
 
 ai_model = Mymodel('CNN')
 simul = Simulation()
+my_utility = Utility()
 
 app = FastAPI()
 app.mount("/stylesheet", StaticFiles(directory="stylesheet"), name="stylesheet")
@@ -48,20 +49,13 @@ def train(request: Request):
 
 @app.post('/train/dataset')
 async def training_dataset(file: UploadFile = File(...)):
-    file_ext = file.filename.split(".").pop()
-    file_name = token_hex(10)
-    # file_path = f"{file_name}.{file_ext}"
+    content = await file.read()
 
-    file_path = file.filename
+    if(my_utility.save_file(content, file.filename, 'datasets')):
+        return {"success":True, "file":file.filename}
+    else:
+        return {"success":False, "file":file.filename, "message":"Unable to save file invalid/malicious file or requires root permission"}
 
-    if(os.path.exists('./datasets/'+file_path)):
-        file_path = f"{file.filename.split('.')[0]}{token_hex(5)}.{file_ext}"
-
-    with open('./datasets/'+file_path, 'wb') as f:
-        content = await file.read()
-        f.write(content)
-    
-    return {"success":True, "file":file.filename}
 
 @app.get('/train/view', response_class=HTMLResponse)
 def train_view(request: Request):

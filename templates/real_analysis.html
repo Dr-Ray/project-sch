@@ -116,16 +116,7 @@
         </div>
     </div>
     <script>
-        function getElement(selector) {
-            var pattern = /^#/;
-            if(pattern.test(selector)) {
-                return document.querySelector(selector);
-            }else {
-                return document.querySelectorAll(selector);
-            }
-        }
         let x, y;
-
         network.xhr_request({
             url:'/realtime/simulate_data',
             method:'GET'
@@ -133,7 +124,6 @@
                 var response = JSON.parse(resp);
                 y = response;
                 x = range_(0, y.length);
-                
 
                 const data = [
                     {"y": y, "x": x, mode:"lines"}

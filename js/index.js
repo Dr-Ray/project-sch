@@ -91,3 +91,18 @@ var network = {
         }
     }
 }
+
+function notification(parent, message, stop) {
+    var el = addElement('div', parent, {
+        "class":"text-center notif",
+        "id":"model_notif_"
+    });
+    el.innerHTML = message;
+
+    setTimeout(()=>{
+        el.classList.add('slideIn');
+        setTimeout(()=>{
+            el.classList.remove('slideIn');
+        }, stop);
+    }, 1000);
+}
