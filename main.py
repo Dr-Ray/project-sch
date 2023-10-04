@@ -7,11 +7,13 @@ from pathlib import Path
 from enum import Enum
 from pydantic import BaseModel
 from typing import Annotated
+from secrets import token_hex
 
 import numpy as np
 import pandas as pd
 from scipy import signal
 import neurokit2 as nk
+
 class simRealreq(BaseModel):
     channels : int
     noise: float
@@ -120,8 +122,18 @@ def train(request: Request):
     return template.TemplateResponse("train.html", {"request":request})
 
 @app.post('/train/dataset')
-def train(file: Annotated[UploadFile, File()]):
-    return {"filename":file.filename}
+async def training_dataset(file: UploadFile = File(...)):
+    file_ext = file.filename.split(".").pop()
+    file_name = token_hex(10)
+    file_path = f"{file_name}.{file_ext}"
+
+    # file_path = file.filename
+
+    with open('./datasets/'+file_path, 'wb') as f:
+        content = await file.read()
+        f.write(content)
+    
+    return {"success":True, "file":file.filename}
 
 @app.get('/train/view', response_class=HTMLResponse)
 def train_view(request: Request):

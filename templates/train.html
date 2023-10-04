@@ -42,6 +42,7 @@
             font-weight: bold;
         }
     </style>
+    <script type="text/javascript" src="{{url_for('js', path='/index.js')}}"></script>
 </head>
 <body>
     <div class="r-app d-col">
@@ -50,13 +51,25 @@
             <div class="p-2 text-xl">Train Model</div>
         </div>
         <div class="sidebar hidden"></div>
-        <div class="content h-full centered text-center">
-            <form class="form" action="/train/dataset" method="POST">
+        <div class="content h-full centered text-center" id="main">
+            <form id="submit_dataset" class="form" enctype="multipart/form-data">
                 <div class="form-group">
-                    <label for="dataset">
+                    <label for="file">
                         <img src="{{url_for('images', path='/images (7).png')}}" alt="Upload dataset">
                     </label>
-                    <input type="file" name="dataset" id="dataset" class="hidden">
+                    <input type="file" name="file" id="file" class="hidden" multiple>
+                    <div>
+                        <div class="thick">
+                            <span id="filename"></span>
+                        </div>
+                        <div class="thick">
+                            <span id="filesize"></span>
+                        </div>
+                        <div class="thick">
+                            <span id="filetype"></span>
+                        </div>
+                    </div>
+                    <!-- <img alt="dummy img" src="#" id="display"/> -->
                 </div>
                 <button class="btn btn-primary btn-upload my-4">Upload</button>
                 <div class="form-foot">
@@ -65,5 +78,49 @@
             </form>
         </div>
     </div>
+    <script>
+        let inp = getElement('#file');
+        let parent_ = getElement('#main');
+        
+        getElement('#submit_dataset').onsubmit = (e) => {
+            e.preventDefault();
+            let form_ = new FormData(e.currentTarget);
+            network.xhr_request({
+                url:'/train/dataset',
+                method:'POST',
+                headers: {
+                    content_type:'multipart/form-data',
+                },
+                data:form_
+            }, (resp, err)=> {
+                        var response = JSON.parse(resp);
+                        if(response.success) {
+                            var el = addElement('div', parent_, {
+                                "class":"text-center notif",
+                                "id":""
+                            });
+                            el.innerHTML = "Dataset uploaded successfully";
+
+                            setTimeout(()=>{
+                                el.classList.add('slideIn');
+                                setTimeout(()=>{
+                                    el.classList.remove('slideIn');
+                                }, 3000);
+                            }, 1000);
+                        }
+                    }
+                    
+                );
+            }
+        
+        
+        inp.onchange = (e)=> {
+            let {name, size, type} = get_file_details(e.target.files[0]);
+
+            getElement('#filename').innerHTML = `file: ${name}`;
+            getElement('#filesize').innerHTML = `filesize: ~ ${size}`;
+            getElement('#filetype').innerHTML = `filetype: ${type} file`;
+        }
+    </script>
 </body>
 </html>

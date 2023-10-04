@@ -29,9 +29,22 @@ function getElement(selector) {
     }
 }
 
+function get_file_details(elem) {
+    let {name, size, type} = elem, cnvt, typ;
+    if(Math.round(size/1000000) < 0.1) {
+        cnvt = Math.round(size/1000)+'kb';
+    }else{
+        cnvt = Math.round(size/1000000)+'mb';
+    }
+
+    typ = type.split('/')[1];
+
+    return {name, "size": cnvt, "type": typ}
+}
+
 function range_(start, stop) {
     let arr = [];
-    for(let i=0; i<stop; ++i) {
+    for(let i=start; i<stop; ++i) {
         arr.push(i);
     }
     return arr
@@ -40,7 +53,6 @@ function range_(start, stop) {
 function getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min) ) + min;
 }
-        
 
 var network = {
     xhr_request : (body, callback) => {
@@ -57,21 +69,25 @@ var network = {
                 callback(null, xhr.responseText)
             }
         }
-        if(body.method == "POST"){
-            xhr.send(body.data);
-        }else{
+        if(body.method == "GET"){
             xhr.send();
+        }else{
+            xhr.send(body.data);
         }
     },
 
-    fetch_request : (body, callback)=> {
-        fetch(body.url, {
-            headers: body.headers,
-            method:body.method,
-            body:body.data
-        })
-        .then(response=>response.json())
-        .then(resp => callback(resp, null))
-        .catch(err => callback(null, err))
+    fetch_request : async (body, callback)=> {
+        try {
+            const res = await fetch(body.url, {
+                headers: body.headers,
+                method:body.method,
+                body:body.data
+            });
+            const resp = await res.json();
+    
+            return callback(resp, null);
+        } catch (error) {
+            return callback(null, error);
+        }
     }
 }
