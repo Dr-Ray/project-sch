@@ -13,6 +13,8 @@ import numpy as np
 import pandas as pd
 from scipy import signal
 import neurokit2 as nk
+import os
+from sklearn.externals import joblib
 
 class simRealreq(BaseModel):
     channels : int
@@ -42,8 +44,18 @@ class Mymodel:
     
     def set_model(self, model):
         self.model = model
+
+    def save_model(self, model):
+        joblib.dump(self.model, f"./saved_model/{model}")
+        return model
+
     
-    def train_model(self, x_train, y_train):
+    def load_saved_model(self, model_name):
+        self.model = joblib.load(model_name)
+
+        return model_name
+    
+    def train_model(self, dataset, percentage):
         if(self.model == "svm"):
             return "training svm model for classification"
         if(self.model == "ann"):
@@ -125,9 +137,12 @@ def train(request: Request):
 async def training_dataset(file: UploadFile = File(...)):
     file_ext = file.filename.split(".").pop()
     file_name = token_hex(10)
-    file_path = f"{file_name}.{file_ext}"
+    # file_path = f"{file_name}.{file_ext}"
 
-    # file_path = file.filename
+    file_path = file.filename
+
+    if(os.path.exists('./datasets/'+file_path)):
+        file_path = f"{file.filename.split('.')[0]}{token_hex(5)}.{file_ext}"
 
     with open('./datasets/'+file_path, 'wb') as f:
         content = await file.read()
