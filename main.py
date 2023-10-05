@@ -55,13 +55,18 @@ def train(request: Request):
 @app.post('/train/dataset')
 async def training_dataset(file: UploadFile = File(...)):
     content = await file.read()
-    if(my_utility.save_file(content, file.filename, 'datasets')):
-        return {"success":True, "file":file.filename}
+    saved_file = my_utility.save_file(content, file.filename, 'datasets')
+
+    if(saved_file['saved']):
+        return {
+            "success":True, 
+            "file":saved_file['filename']
+        }
     else:
         return {
             "success":False, 
-            "file":file.filename, 
-            "message":"Unable to save file invalid/malicious file or requires root permission"
+            "file":saved_file['filename'], 
+            "message":"Unable to save file invalid / malicious file or requires root permission"
         }
 
 
@@ -77,8 +82,15 @@ def train_analysis(request: Request):
 def train_percent(inp: TrainInput):
     trainSize_ = int(inp.train_size)
     dataset = inp.filename
-    model = ai_model.train_model(dataset, (trainSize_/100))
-    return {"Model":model, "Train percentage": (trainSize_/100)}
+
+    df = ai_model.train_model(dataset, (trainSize_/100))
+
+    print(df)
+
+    # if(df['read']):
+    #     return {"Dataframe":df['dataframe']}
+    # else:
+    #     return {"error":"error"}
 
 @app.get('/predict', response_class=HTMLResponse)
 def predict(request: Request):
