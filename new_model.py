@@ -32,10 +32,24 @@ class Mymodel:
     def train_model(self, dataset, percentage):
         if(self.model == "svm"):
             return "training svm model for classification"
+        
         if(self.model == "ann"):
             return "training ann model for classification"
+        
         if(self.model == "cnn"):
             return "training cnn model for classification"
+        
+        if(self.model == "cnn_svm"):
+            return "training (cnn and svm model) for classification"
+        
+        if(self.model == "cnn_ann"):
+            return "training (cnn and ann model) for classification"
+        
+        if(self.model == "cnn_ann_svm"):
+            return "training (cnn, ann and svm) model for classification"
+        
+        if(self.model == "ann_svm"):
+            return "training (ann and svm) model for classification"
         else:
             return "No model selected for training"
     

@@ -59,7 +59,7 @@ var network = {
         var xhr = new XMLHttpRequest();
         xhr.open(body.method, body.url);
         if(body.content_type) {
-            xhr.setRequestHeader("content-type", body.content_type);
+            xhr.setRequestHeader("content-Type", body.content_type);
         }
         xhr.onload = (e) => {
             if(xhr.status == 200) {
@@ -69,10 +69,14 @@ var network = {
                 callback(null, xhr.responseText)
             }
         }
-        if(body.method == "GET"){
-            xhr.send();
+        if(body.data) {
+            if(body.method == "GET"){
+                xhr.send();
+            }else{
+                xhr.send(body.data);
+            }
         }else{
-            xhr.send(body.data);
+            xhr.send();
         }
     },
 

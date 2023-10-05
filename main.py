@@ -1,10 +1,11 @@
-from fastapi import FastAPI, Request, File, UploadFile
+from fastapi import FastAPI, Request, File, UploadFile, Form
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from enum import Enum
 from pydantic import BaseModel
+from typing import Annotated
 
 from simulation_model import Simulation
 from new_model import Mymodel
@@ -17,6 +18,10 @@ class simRealreq(BaseModel):
     duration : float
     gesture_labels : str
     sample_frequency : int
+
+class TrainInput(BaseModel):
+    train_size : str
+    filename: str
 
 class SelectModel(str, Enum):
     svm_model = "svm"
@@ -68,6 +73,13 @@ def train_view(request: Request):
 def train_analysis(request: Request):
     return template.TemplateResponse("train_analysis.html", {"request":request})
 
+@app.post('/train/percent')
+def train_percent(inp: TrainInput):
+    trainSize_ = int(inp.train_size)
+    dataset = inp.filename
+    model = ai_model.train_model(dataset, (trainSize_/100))
+    return {"Model":model, "Train percentage": (trainSize_/100)}
+
 @app.get('/predict', response_class=HTMLResponse)
 def predict(request: Request):
     return template.TemplateResponse("predict.html", {"request": request})
@@ -100,5 +112,4 @@ def select_model(request: Request):
 
 @app.get('/selected_model/{model}')
 def selected_model(model: SelectModel):
-    print(model)
     return ai_model.selectModel(model)

@@ -71,6 +71,25 @@
             border-top-right-radius: 8px;
             border-top-left-radius: 8px;
         }
+
+        .settings {
+            visibility: hidden;
+            transition:all .3s linear;
+        }
+
+        .hide {
+            overflow: hidden;
+            width: 0;
+            height: 0;
+        }
+
+        .open_settings {
+            visibility: visible;
+            overflow: auto;
+            width: auto;
+            height: auto;
+            padding:10px;
+        }
     </style>
     <script type="text/javascript" src="{{url_for('js', path='/index.js')}}"></script>
 </head>
@@ -106,24 +125,19 @@
                     <span class="thick mt-4">Note</span>: Let your gesture set be the last column of the dataset
                 </div>
             </form>
+            <form class="settings hide" id="settings">
+                <div class="form-group my-16">
+                    <label for="mother long" class="thick">Percentage for training</label>
+                    <input type="number" name="train_size" id="train_size" class="form-control" min="50" max="90" placeholder="50" required>
+                </div>
+
+                <button class="btn btn-primary w-full my-4" type="submit">Continue</button>
+            </form>
         </div>
     </div>
     <script>
         let inp = getElement('#file');
         let parent_ = getElement('#main');
-
-        let train_settings = `
-            <form class="form" id="settings">
-                <div class="form-group my-16">
-                    <label for="mother long" class="thick">Percentage for training</label>
-                    <input type="number" name="p_size" id="p_size" class="form-control" min="50" max="90" placeholder="50" required>
-                </div>
-
-                <button class="btn btn-primary w-full my-4" type="submit">Train Model</button>
-                <div class="form-foot">
-                    <span class="thick mt-4">Note</span>:
-                </div>
-            </form>`;
         
         getElement('#submit_dataset').onsubmit = (e) => {
             e.preventDefault();
@@ -142,37 +156,40 @@
                 var response = JSON.parse(resp);
                 if(response.success) {
                     notification(parent_, "Dataset uploaded successfully", 3000);
-                    getElement('#main').innerHTML = train_settings;
-                    
+                    getElement('#submit_dataset').classList.add('hide');
+                    parent_.classList.remove('text-center');
+                    getElement('#settings').classList.add('open_settings');
+
                 }else{
                     notification(parent_, response.message, 5000);
+                    getElement('#submit_dataset').classList.add('hide');
+                    parent_.classList.remove('text-center');
+                    getElement('#settings').classList.add('open_settings');
                 }
             });
         }
 
-        try {
-            getElement('#settings').onsubmit = (e) => {
-                e.preventDefault();
-                var data = {
-                    "p_size": (e.target.p_size.value)
-                }
-
-                var req_body = {
-                    url: "/train/analysis/",
-                    method: "POST",
-                    data:JSON.stringify(data),
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }
-
-                let resp = network.fetch_request(req_body, (response)=> {
-                    console.log(resp);
-                    // window.location = response.redirect_link;
-                });
+        getElement('#settings').onsubmit = (e) => {
+            e.preventDefault();
+            let file = getElement('#filename').innerHTML.split(': ')[1];
+            let data = {
+                "train_size": e.target.train_size.value,
+                "filename": file
             }
-        } catch (error) {
-            console.log(error)
+
+            let req_body = {
+                url: `/train/percent/`,
+                method: "POST",
+                data:JSON.stringify(data),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
+
+            let resp = network.fetch_request(req_body, (response, err)=> {
+                notification(parent_, response.Model, 3000);
+                // window.location = response.redirect_link;
+            });
         }
         
         inp.onchange = (e)=> {
