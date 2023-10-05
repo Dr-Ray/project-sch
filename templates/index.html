@@ -169,9 +169,10 @@
     <script>
         let parent = document.querySelector('#main');
 
-        let model = window.location.search.split('=')[1], message = model.replaceAll('%20',' ');
+        let model = window.location.search.split('=')[1];
 
         if(model){
+            let message = model.replaceAll('%20',' ');
             notification(parent, message, 3000);
         }
         

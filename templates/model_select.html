@@ -109,7 +109,8 @@
                 method: "GET", 
                 url: "/selected_model/"+e.target.model.value, 
             }, (response)=> {
-                var response = JSON.parse(response)
+                var response = JSON.parse(response);
+                console.log(response)
                 window.location = `/?q=${response.selected_model}`;
             });
         }

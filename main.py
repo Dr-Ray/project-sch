@@ -50,11 +50,14 @@ def train(request: Request):
 @app.post('/train/dataset')
 async def training_dataset(file: UploadFile = File(...)):
     content = await file.read()
-
     if(my_utility.save_file(content, file.filename, 'datasets')):
         return {"success":True, "file":file.filename}
     else:
-        return {"success":False, "file":file.filename, "message":"Unable to save file invalid/malicious file or requires root permission"}
+        return {
+            "success":False, 
+            "file":file.filename, 
+            "message":"Unable to save file invalid/malicious file or requires root permission"
+        }
 
 
 @app.get('/train/view', response_class=HTMLResponse)
@@ -97,30 +100,5 @@ def select_model(request: Request):
 
 @app.get('/selected_model/{model}')
 def selected_model(model: SelectModel):
-    if model.value == "cnn_ann_svm":
-        ai_model.set_model("CNN_ANN_SVM")
-        return {"selected_model":"Ensemble with Convolutional neural network, Artificial neural network and Support vector machine"}
-    
-    if model.value == "cnn_ann":
-        ai_model.set_model("CNN_ANN")
-        return {"selected_model":"Ensemble with Convolutional neural network and Artificial neural network"}
-    
-    if model.value == "cnn_svm":
-        ai_model.set_model("CNN_SVM")
-        return {"selected_model":"Ensemble with Convolutional neural network and Support vector machine"}
-    
-    if model.value == "ann_svm":
-        ai_model.set_model("ANN_SVM")
-        return {"selected_model":"Ensemble with Artificial neural network and Support vector machine"}
-    
-    if model.value == "ann":
-        ai_model.set_model("ANN")
-        return {"selected_model":"Artificial neural network"}
-    
-    if model.value == "svm":
-        ai_model.set_model("SVM")
-        return {"selected_model":"Support vector machine"}
-    
-    if model.value == "cnn":
-        ai_model.set_model("CNN")
-        return {"selected_model":"Convolutional Neural Network"}
+    print(model)
+    return ai_model.selectModel(model)

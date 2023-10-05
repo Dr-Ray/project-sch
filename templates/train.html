@@ -127,25 +127,28 @@
         
         getElement('#submit_dataset').onsubmit = (e) => {
             e.preventDefault();
+            
             let form_ = new FormData(e.currentTarget);
-            network.xhr_request({
+            let req_body = {
                 url:'/train/dataset',
                 method:'POST',
                 headers: {
                     content_type:'multipart/form-data',
                 },
                 data:form_
-            }, (resp, err)=> {
-                    var response = JSON.parse(resp);
-                    if(response.success) {
-                        notification(parent_, "Dataset uploaded successfully", 3000);
-                        getElement('#main').innerHTML = train_settings;
-                        
-                    }else{
-                        notification(parent_, response.message, 3000);
-                    }
-                });
             }
+
+            network.xhr_request(req_body, (resp, err)=> {
+                var response = JSON.parse(resp);
+                if(response.success) {
+                    notification(parent_, "Dataset uploaded successfully", 3000);
+                    getElement('#main').innerHTML = train_settings;
+                    
+                }else{
+                    notification(parent_, response.message, 5000);
+                }
+            });
+        }
 
         try {
             getElement('#settings').onsubmit = (e) => {
@@ -174,7 +177,6 @@
         
         inp.onchange = (e)=> {
             let {name, size, type} = get_file_details(e.target.files[0]);
-
             getElement('#filename').innerHTML = `file: ${name}`;
             getElement('#filesize').innerHTML = `filesize: ~ ${size}`;
             getElement('#filetype').innerHTML = `filetype: ${type} file`;
