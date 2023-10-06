@@ -6,11 +6,12 @@ import joblib
 import os
 
 from signal_processing import SignalProcessing
+from ml_models import SVM_Model, ANN_Model
 
 processor = SignalProcessing()
 class Mymodel:
     def __init__(self, model):
-        self.model = model
+        self.model_type = model
         self.allowed_type = ['csv', 'json', 'xlsx', 'txt']
     
     def read_dataset(self, filename, folder='datasets'):
@@ -39,7 +40,7 @@ class Mymodel:
         return {"read": False, "message": "Invalid / maliciious file"}
     
     def get_model(self):
-        return self.model
+        return self.model_type
     
     def set_model(self, model):
         self.model = model
@@ -54,39 +55,44 @@ class Mymodel:
         return model_name
     
     def train_model(self, dataset, percentage):
-        if(self.model.lower() == "svm"):
+        if(self.model_type.lower() == "svm"):
             df = self.read_dataset(dataset)
-            print(df)
+            dataset = df['dataframe']
+            self.model = SVM_Model()
+            self.model.train(dataset, percentage)
             return "hello"
         
-        if(self.model.lower() == "ann"):
+        if(self.model_type.lower() == "ann"):
             df = self.read_dataset(dataset)
-            print(df)
+            dataset = df['dataframe']
+            
+            self.model = ANN_Model((len(dataset)-1), 4)
+            
             return "Hello"
         
-        if(self.model.lower() == "cnn"):
+        if(self.model_type.lower() == "cnn"):
             df = self.read_dataset(dataset)
-            print(df)
+            dataset = df['dataframe']
             return "Hello"
         
-        if(self.model.lower() == "cnn_svm"):
+        if(self.model_type.lower() == "cnn_svm"):
             df = self.read_dataset(dataset)
-            print(df)
+            dataset = df['dataframe']
             return "Hello"
         
-        if(self.model.lower() == "cnn_ann"):
+        if(self.model_type.lower() == "cnn_ann"):
             df = self.read_dataset(dataset)
-            print(df)
+            dataset = df['dataframe']
             return "Hello"
         
-        if(self.model.lower() == "cnn_ann_svm"):
+        if(self.model_type.lower() == "cnn_ann_svm"):
             df = self.read_dataset(dataset)
-            print(df)
+            dataset = df['dataframe']
             return "Hello"
         
-        if(self.model.lower() == "ann_svm"):
+        if(self.model_type.lower() == "ann_svm"):
             df = self.read_dataset(dataset)
-            print(df)
+            dataset = df['dataframe']
             return "Hello"
         else:
             return "No model selected for Training"
@@ -134,13 +140,13 @@ class Mymodel:
                 "selected_model":"Convolutional Neural Network"
             }
     
-    def preprocess(self, data, l_freq, h_freq):
-        # Noise removal and filter signal with cut off frquencies 20hz and 60hz
-        filtered_signal = []
+    # def preprocess(self, data, l_freq, h_freq):
+    #     # Noise removal and filter signal with cut off frquencies 20hz and 60hz
+    #     filtered_signal = []
 
-        # Rectify fullwave
-        filtered_signal_rectified = []
+    #     # Rectify fullwave
+    #     filtered_signal_rectified = []
 
-        for label in data.columns[:-1]:
-            filtered_signal.append(processor.bandpass_filter(data[label], l_freq, h_freq))
-            filtered_signal_rectified.append(processor.rectify(processor.bandpass_filter(data[label], l_freq, h_freq)))
+    #     for label in data.columns[:-1]:
+    #         filtered_signal.append(processor.bandpass_filter(data[label], l_freq, h_freq))
+    #         filtered_signal_rectified.append(processor.rectify(processor.bandpass_filter(data[label], l_freq, h_freq)))
