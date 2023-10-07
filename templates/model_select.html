@@ -72,10 +72,11 @@
             border-top-left-radius: 8px;
         }
     </style>
+    <script type="text/javascript" src="{{url_for('js', path='/jquery.js')}}"></script>
     <script type="text/javascript" src="{{url_for('js', path='/index.js')}}"></script>
 </head>
 <body>
-    <div class="r-app d-col">
+    <div class="r-app d-col" id="r-app">
         <div class="nav h-row justify-between">
             <div class="logo p-2 text-xl">&#9776;</div>
             <div class="p-2 text-xl">Select Model</div>
@@ -105,13 +106,15 @@
     <script>
         document.querySelector('#selectmodel').onsubmit = (e)=> {
             e.preventDefault();
-            let resp = network.xhr_request({
-                method: "GET", 
+            $.ajax({
                 url: "/selected_model/"+e.target.model.value, 
-            }, (response)=> {
-                var response = JSON.parse(response);
-                console.log(response)
-                window.location = `/?q=${response.selected_model}`;
+                type:'GET',
+                beforeSend: ()=> {
+                    createLoader('/loader2.gif');
+                },
+                success: (response)=> {
+                    window.location = `/?q=${response.selected_model}`;
+                }
             });
         }
     </script>

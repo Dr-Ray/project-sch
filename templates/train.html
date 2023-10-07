@@ -12,6 +12,9 @@
             --blue: aqua;
             --white:#fff;
         }
+        .r-app {
+            overflow-x: hidden;
+        }
         .hidden {
             visibility: hidden;
             display: none;
@@ -21,6 +24,9 @@
         }
         .text-xl {
             font-size: x-large;
+        }
+        .text-white {
+            color:#fff;
         }
         .bg-blue { 
             background-color: var(--blue);
@@ -90,14 +96,34 @@
             height: auto;
             padding:10px;
         }
+        .loader {
+            position: fixed;
+            width: 100%;
+            height: 100vh;
+            z-index: 9999;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all .3s ease;
+        }
+        .rm-loader {
+            z-index: 0;
+            width: 0;
+            visibility: hidden;
+        }
     </style>
+    <script type="text/javascript" src="{{url_for('js', path='/jquery.js')}}"></script>
     <script type="text/javascript" src="{{url_for('js', path='/index.js')}}"></script>
 </head>
 <body>
-    <div class="r-app d-col">
+    <div class="r-app d-col" id="r-app">
         <div class="nav h-row justify-between">
             <div class="logo p-2 text-xl">&#9776;</div>
-            <div class="p-2 text-xl">Train Model</div>
+            <a href="/">
+                <div class="p-2 text-xl">Train Model</div>
+            </a>
         </div>
         <div class="sidebar hidden"></div>
         <div class="content h-full centered text-center" id="main">
@@ -139,13 +165,13 @@
             </form>
         </div>
     </div>
+    
     <script>
         let inp = getElement('#file');
         let parent_ = getElement('#main');
         
         getElement('#submit_dataset').onsubmit = (e) => {
             e.preventDefault();
-            
             let form_ = new FormData(e.currentTarget);
             let req_body = {
                 url:'/train/dataset',
@@ -159,7 +185,6 @@
             network.xhr_request(req_body, (resp, err)=> {
                 var response = JSON.parse(resp);
                 if(response.success) {
-                    console.log(response.file)
                     getElement('#filename__').value = response.file;
                     notification(parent_, "Dataset uploaded successfully", 3000);
                     getElement('#submit_dataset').classList.add('hide');
@@ -180,23 +205,24 @@
                 "filename": file
             }
 
-            let req_body = {
+            $.ajax({
                 url: `/train/percent/`,
-                method: "POST",
+                type:'POST',
+                contentType:'application/json',
                 data:JSON.stringify(data),
-                headers: {
-                    "Content-Type": "application/json"
+                beforeSend: ()=> {
+                    createLoader('/loader2.gif', 'Training model with dataset....', '#151617');
+                },
+                success: (resp, err)=> {
+                    console.log("this is probable error message", err);
+                    console.log(resp);
+                    if(err) {
+                        notification(parent_, err.message=' \n Please check the file try again ', 5000);
+                    }else{
+                        var response = JSON.parse(resp);
+                        console.log(response)
+                    }
                 }
-            }
-
-            let resp = network.fetch_request(req_body, (response, err)=> {
-                if(response.Model.read) {
-                    notification(parent_, "Dataset loaded successfuly", 3000);
-                    console.log(response.Model.dataframe)
-                }else{
-                    notification(parent_, response.Model.message, 3000);
-                }
-                // window.location = response.redirect_link;
             });
         }
         

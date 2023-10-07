@@ -17,6 +17,9 @@ from tensorflow.keras.utils import to_categorical
 class SVM_Model:
     def __init__(self):
         self.model = SVC()
+
+    def _getreport(self):
+        return self.model_report
     
     def split_dataset(self, train_percent):
         # Shuffle and Split datasets into triaining and testing datasets
@@ -49,6 +52,7 @@ class SVM_Model:
         self.report()
 
     def report(self):
+        self.model_report = classification_report(self.y_test, self.y_pred, output_dict=True)
         print(classification_report(self.y_test, self.y_pred))
 
 # class CNN_Model:
@@ -119,7 +123,7 @@ class ANN_Model:
             self.optimizer = tf.keras.optimizers.Adamax(learning_rate)
             return self.optimizer
 
-    def train(self, train_percent, optimizer, learning_rate, epochs, batch_size):
+    def train(self, dataset, train_percent, optimizer, learning_rate, epochs, batch_size):
         self.df = dataset
         self.split_dataset(train_percent)
         self.model.compile(optimizer=self._optimizer(optimizer, learning_rate), loss='categorical_crossentropy', metrics=['categorical_accuracy'])
@@ -129,9 +133,14 @@ class ANN_Model:
         )
 
         self.plot_history()
+
+        evl = self.model_evaluation()
+        test_res = self._test()
+
+        return {"model evaluation":evl, "model test":tes_res}
     
     def model_evaluation(self):
-        loss, accuracy = self.model.evaluate(self.x_test, self.y_test, verbose=0)
+        loss, accuracy = self.model.evaluate(self.x_test, self.y_test, verbose=1)
 
         return {"Model Loss":(loss*100), "Accuracy": (accuracy*100)}
 
@@ -141,9 +150,11 @@ class ANN_Model:
         rounded_predictions = np.argmax(predictions, axis=1)
         labels = np.argmax(self.y_test, axis=1)
 
-        for i in range(40):
-            print('Predicted %d -------> Expexted %d' % (rounded_predictions[i], labels[i]))
-        # print(f"Output prediction is {rounded_predictions}")
+        return {
+            "True class":labels, 
+            "Predicted class":rounded_predictions, 
+            "report": (classification_report(self.y_test, self.y_pred, output_dict=True))
+        }
     
     def plot_history(self):
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))

@@ -80,12 +80,13 @@
             height: 300px;
         }
     </style>
+    <script type="text/javascript" src="{{url_for('js', path='/jquery.js')}}"></script>
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script> -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script type="text/javascript" src="{{url_for('js', path='/index.js')}}"></script>
 </head>
 <body>
-    <div class="r-app d-col">
+    <div class="r-app d-col" id="r-app">
         <div class="nav h-row justify-between">
             <div class="logo p-2 text-xl">&#9776;</div>
             <div class="p-2 text-xl">Realtime Analysis</div>

@@ -9,7 +9,7 @@ function addElement(tag, parent, optional={}){
     return elem;
 }
 
-function effect(elems, event, d_class) {
+function _event(elems, event, d_class) {
     for( let i=0; i<=elems.length; i++) {
         elems[i].addEventListener(event, ()=> {
             elems[i].classList.add(d_class);
@@ -54,6 +54,7 @@ function getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min) ) + min;
 }
 
+
 var network = {
     xhr_request : (body, callback) => {
         var xhr = new XMLHttpRequest();
@@ -63,6 +64,7 @@ var network = {
         }
         xhr.onload = (e) => {
             if(xhr.status == 200) {
+                // getElement("#anim_loader").classList.add('rm-loader');
                 var response = xhr.responseText;
                 callback(response, null);
             }else {
@@ -95,6 +97,31 @@ var network = {
         }
     }
 }
+
+function createLoader(img='', text='', color='#000',) {
+    var elem = addElement('div', getElement('#r-app'),{
+        "id":"anim_loader",
+        "class":"loader"
+    });
+
+    elem.style.background = `linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)), url("./images/${img}")`;
+    elem.style.backgroundRepeat = "no-repeat";
+    elem.style.backgroundPosition = "center";
+    elem.style.color = color;
+
+    if(text) {
+        elem.innerHTML = text;
+    }
+}
+
+function anim_loader(timestamp=3000) {
+    setTimeout(()=> {
+        createLoader('/loader2.gif');
+        setTimeout(() => {
+            getElement("#anim_loader").classList.add('rm-loader');
+        }, timestamp)
+    }, 10);
+ }
 
 function notification(parent, message, stop) {
     var el = addElement('div', parent, {

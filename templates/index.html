@@ -122,10 +122,11 @@
         }
 
     </style>
+    <script type="text/javascript" src="{{url_for('js', path='/jquery.js')}}"></script>
     <script type="text/javascript" src="{{url_for('js', path='/index.js')}}"></script>
 </head>
 <body>
-    <div class="r-app d-col">
+    <div class="r-app d-col" id="r-app">
         <div class="nav h-row justify-between">
             <div class="logo thick p-2 text-xl">&#9776;</div>
             <div class="p-2 text-xl">Model {{current_model}}</div>

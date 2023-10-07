@@ -72,10 +72,11 @@
             border-top-left-radius: 8px;
         }
     </style>
+    <script type="text/javascript" src="{{url_for('js', path='/jquery.js')}}"></script>
     <script type="text/javascript" src="{{url_for('js', path='/index.js')}}"></script>
 </head>
 <body>
-    <div class="r-app d-col">
+    <div class="r-app d-col" id="r-app">
         <div class="nav h-row justify-between">
             <div class="logo p-2 text-xl">&#9776;</div>
             <div class="p-2 text-xl">Realtime data</div>
@@ -131,7 +132,7 @@
             }
 
             var req_body = {
-                url: "/realtime/simulate/",
+                
                 method: "POST",
                 data:JSON.stringify(data),
                 headers: {
@@ -141,6 +142,19 @@
 
             let resp = network.fetch_request(req_body, (response)=> {
                 window.location = response.redirect_link;
+            });
+            $.ajax({
+                url: "/realtime/simulate/",
+                type:'POST',
+                contentType:'application/json',
+                data:JSON.stringify(data),
+                beforeSend: ()=> {
+                    createLoader('/loader2.gif');
+                },
+                success: (resp)=> {
+                    var response = JSON.parse(resp);
+                    console.log(response)
+                }
             });
         }
     </script>

@@ -33,7 +33,7 @@ class Mymodel:
                     return {"read": True, "dataframe":df}
                 
                 if(file_ext == 'txt'):
-                    df = pd.read_csv(f"./{folder}/{filename}", sep=" ", header=None)
+                    df = pd.read_csv(f"./{folder}/{filename}", sep="\t")
                     return {"read": True, "dataframe":df}
                     
             return {"read": False, "message": "File does not exist / Unable to read file "}
@@ -43,7 +43,7 @@ class Mymodel:
         return self.model_type
     
     def set_model(self, model):
-        self.model = model
+        self.model_type = model
 
     def save_model(self, model):
         joblib.dump(self.model, f"./saved_model/{model}")
@@ -57,18 +57,21 @@ class Mymodel:
     def train_model(self, dataset, percentage):
         if(self.model_type.lower() == "svm"):
             df = self.read_dataset(dataset)
+
             dataset = df['dataframe']
             self.model = SVM_Model()
-            self.model.train(dataset, percentage)
-            return "hello"
+            acc = self.model.train(dataset, percentage)
+            
+            return self.model._getreport()
         
         if(self.model_type.lower() == "ann"):
             df = self.read_dataset(dataset)
             dataset = df['dataframe']
             
             self.model = ANN_Model((len(dataset)-1), 4)
+            resp = self.model.train(dataset, percentage, "adam", 0.001, 100, 100)
             
-            return "Hello"
+            return self.model._getreport()
         
         if(self.model_type.lower() == "cnn"):
             df = self.read_dataset(dataset)

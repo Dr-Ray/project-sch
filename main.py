@@ -82,15 +82,9 @@ def train_analysis(request: Request):
 def train_percent(inp: TrainInput):
     trainSize_ = int(inp.train_size)
     dataset = inp.filename
-
     df = ai_model.train_model(dataset, (trainSize_/100))
 
-    print(df)
-
-    # if(df['read']):
-    #     return {"Dataframe":df['dataframe']}
-    # else:
-    #     return {"error":"error"}
+    return df
 
 @app.get('/predict', response_class=HTMLResponse)
 def predict(request: Request):
