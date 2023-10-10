@@ -42,6 +42,9 @@ class Mymodel:
     def get_model(self):
         return self.model_type
     
+    def get_model_fname(self):
+        return self.model_fname
+    
     def set_model(self, model):
         self.model_type = model
 
@@ -54,13 +57,15 @@ class Mymodel:
 
         return model_name
     
-    def train_model(self, dataset, percentage):
+    def train_model(self, dataset, percentage, g_set=4):
         if(self.model_type.lower() == "svm"):
             df = self.read_dataset(dataset)
 
             dataset = df['dataframe']
             self.model = SVM_Model()
             acc = self.model.train(dataset, percentage)
+
+            self.report = self.model._getreport()
             
             return self.model._getreport()
         
@@ -68,8 +73,10 @@ class Mymodel:
             df = self.read_dataset(dataset)
             dataset = df['dataframe']
             
-            self.model = ANN_Model((len(dataset)-1), 4)
+            self.model = ANN_Model((len(dataset)-1), g_set)
             resp = self.model.train(dataset, percentage, "adam", 0.001, 100, 100)
+
+            self.report = self.model._getreport()
             
             return self.model._getreport()
         
@@ -103,46 +110,53 @@ class Mymodel:
     def selectModel(self, model):
         if model.value == "cnn_ann_svm":
             self.set_model("CNN_ANN_SVM")
+            self.model_fname = "Ensemble with Convolutional neural network, Artificial neural network and Support vector machine"
             return {
                 "selected_model":"Ensemble with Convolutional neural network, Artificial neural network and Support vector machine"
             }
         
         if model.value == "cnn_ann":
             self.set_model("CNN_ANN")
+            self.model_fname = "Ensemble with Convolutional neural network and Artificial neural network"
             return {
                 "selected_model":"Ensemble with Convolutional neural network and Artificial neural network"
             }
         
         if model.value == "cnn_svm":
             self.set_model("CNN_SVM")
+            self.model_fname = "Ensemble with Convolutional neural network and Support vector machine"
             return {
                 "selected_model":"Ensemble with Convolutional neural network and Support vector machine"
             }
         
         if model.value == "ann_svm":
             self.set_model("ANN_SVM")
+            self.model_fname = "Ensemble with Artificial neural network and Support vector machine"
             return {
                 "selected_model":"Ensemble with Artificial neural network and Support vector machine"
             }
         
         if model.value == "ann":
             self.set_model("ANN")
+            self.model_fname = "Artificial neural network"
             return {
                 "selected_model":"Artificial neural network"
             }
         
         if model.value == "svm":
             self.set_model("SVM")
+            self.model_fname = "Support vector machine"
             return {
                 "selected_model":"Support vector machine"
             }
         
         if model.value == "cnn":
             self.set_model("CNN")
+            self.model_fname = "Convolutional Neural Network"
             return {
                 "selected_model":"Convolutional Neural Network"
             }
-    
+ 
     # def preprocess(self, data, l_freq, h_freq):
     #     # Noise removal and filter signal with cut off frquencies 20hz and 60hz
     #     filtered_signal = []

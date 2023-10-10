@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Train model</title>
+    <title>Model | Train</title>
     <link rel="stylesheet" href="{{url_for('stylesheet', path='/styles.css')}}">
     <style>
         :root {
@@ -153,15 +153,20 @@
             </form>
             <form class="settings hide" id="settings">
                 <div class="form-group my-16">
-                    <label for="mother long" class="thick">Percentage for training</label>
+                    <label for="train_size" class="thick">Percentage for training</label>
                     <input type="number" name="train_size" id="train_size" class="form-control" min="50" max="90" placeholder="50" required>
+                </div>
+
+                <div class="form-group my-16">
+                    <label for="g_set" class="thick">Numbwer of gesture set (output)</label>
+                    <input type="number" name="g_set" id="g_set" class="form-control" min="1" placeholder="4" required>
                 </div>
 
                 <div class="form-group my-16">
                     <input type="hidden" name="filename" id="filename__" class="form-control" required>
                 </div>
 
-                <button class="btn btn-primary w-full my-4" type="submit">Continue</button>
+                <button class="btn btn-primary w-full my-4" type="submit" id="smbtn">Continue</button>
             </form>
         </div>
     </div>
@@ -186,13 +191,13 @@
                 var response = JSON.parse(resp);
                 if(response.success) {
                     getElement('#filename__').value = response.file;
-                    notification(parent_, "Dataset uploaded successfully", 3000);
+                    notification(parent_, "Dataset uploaded successfully", 3000, "success");
                     getElement('#submit_dataset').classList.add('hide');
                     parent_.classList.remove('text-center');
                     getElement('#settings').classList.add('open_settings');
 
                 }else{
-                    notification(parent_, response.message, 5000);
+                    notification(parent_, response.message, 5000, "warning");
                 }
             });
         }
@@ -202,7 +207,8 @@
             let file = getElement('#filename__').value;
             let data = {
                 "train_size": e.target.train_size.value,
-                "filename": file
+                "filename": file,
+                "g_set": e.target.g_set.value,
             }
 
             $.ajax({
@@ -211,28 +217,37 @@
                 contentType:'application/json',
                 data:JSON.stringify(data),
                 beforeSend: ()=> {
-                    createLoader('/loader2.gif', 'Training model with dataset....', '#151617');
+                    createLoader('/loader2.gif', 'Training model with dataset....', '#fff');
                 },
-                success: (resp, err)=> {
-                    console.log("this is probable error message", err);
+                success: (resp)=> {
                     console.log(resp);
-                    if(err) {
-                        notification(parent_, err.message=' \n Please check the file try again ', 5000);
-                    }else{
-                        var response = JSON.parse(resp);
-                        console.log(response)
-                    }
+                    notification(parent_, 'Training completed', 5000, "success");
+                    let an = addElement('a', parent_,{
+                        "href":"/train/analysis"
+                    });
+                    let btn = addElement('button', an,{
+                        "type": "button",
+                        "class": "btn btn-primary w-full my-4"
+                    });
+                    btn.innerHTML = "Check training analysis";
+                    getElement('#settings').classList.remove('open_settings');
+                },
+                error: (xhr)=>{
+                    notification(parent_, xhr.responseText, 5000, "error");
+                },
+                complete:()=>{
+                    getElement("#anim_loader").classList.toggle('rm-loader');
                 }
             });
         }
         
         inp.onchange = (e)=> {
             let {name, size, type} = get_file_details(e.target.files[0]);
+
             getElement('#filename').innerHTML = `file: ${name}`;
             getElement('#filesize').innerHTML = `filesize: ~ ${size}`;
             getElement('#filetype').innerHTML = `filetype: ${type} file`;
         }
-
     </script>
 </body>
 </html>

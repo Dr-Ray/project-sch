@@ -1,8 +1,12 @@
 function addElement(tag, parent, optional={}){
     var elem = document.createElement(tag);
     if(optional){
-        elem.setAttribute('id', optional.id)
-        elem.setAttribute('class', optional.class)
+        elem.setAttribute('id', optional.id?optional.id:'')
+        elem.setAttribute('class', optional.class?optional.class:'')
+        elem.setAttribute('src', optional.src?optional.src:'')
+        elem.setAttribute('href', optional.href?optional.href:'')
+        elem.setAttribute('value', optional.value?optional.value:'')
+        elem.setAttribute('type', optional.type?optional.type:'')
     }
     parent.appendChild(elem);
 
@@ -123,17 +127,48 @@ function anim_loader(timestamp=3000) {
     }, 10);
  }
 
-function notification(parent, message, stop) {
-    var el = addElement('div', parent, {
-        "class":"text-center notif",
-        "id":"model_notif_"
-    });
-    el.innerHTML = message;
-
+function notification(parent, message, stop, type="notification") {
+    let elem = getElement("#model_notif_");
+    if(elem) {
+        elem.innerHTML = message;
+        if(type == "success") {
+            elem.style.backgroundColor = "#28a745";
+            elem.style.color = "#fff";
+        }
+        if(type == "error") {
+            elem.style.backgroundColor = "#dc3545";
+            elem.style.color = "#fff";
+        }
+        if(type == "warning") {
+            elem.style.backgroundColor = "#ffc107";
+            elem.style.color = "#fff";
+        }
+    }else{
+        var el = addElement('div', parent, {
+            "class":"text-center notif",
+            "id":"model_notif_"
+        });
+        el.innerHTML = message;
+    
+        if(type == "success") {
+            el.style.backgroundColor = "#28a745";
+            el.style.color = "#fff";
+        }
+        if(type == "error") {
+            el.style.backgroundColor = "#dc3545";
+            el.style.color = "#fff";
+        }
+        if(type == "warning") {
+            el.style.backgroundColor = "#ffc107";
+            el.style.color = "#fff";
+        }
+    }
     setTimeout(()=>{
-        el.classList.add('slideIn');
+        el?el.classList.add('slideIn'):'';
+        elem?elem.classList.add('slideIn'):''
         setTimeout(()=>{
-            el.classList.remove('slideIn');
+            el?el.classList.remove('slideIn'):'';
+            elem?elem.classList.remove('slideIn'):''
         }, stop);
     }, 1000);
 }

@@ -22,6 +22,7 @@ class simRealreq(BaseModel):
 class TrainInput(BaseModel):
     train_size : str
     filename: str
+    g_set: int
 
 class SelectModel(str, Enum):
     svm_model = "svm"
@@ -40,6 +41,7 @@ my_utility = Utility()
 app = FastAPI()
 app.mount("/stylesheet", StaticFiles(directory="stylesheet"), name="stylesheet")
 app.mount("/images", StaticFiles(directory="images"), name="images")
+app.mount("/fonts", StaticFiles(directory="fonts"), name="fonts")
 app.mount("/js", StaticFiles(directory="js"), name="js")
 
 template = Jinja2Templates(directory="templates")
@@ -76,15 +78,31 @@ def train_view(request: Request):
 
 @app.get('/train/analysis', response_class=HTMLResponse)
 def train_analysis(request: Request):
-    return template.TemplateResponse("train_analysis.html", {"request":request})
+    return template.TemplateResponse("train_analysis.html", {
+        "request":request, 
+        "report": ai_model.report,
+        "model": ai_model.get_model_fname()  
+    })
 
 @app.post('/train/percent')
 def train_percent(inp: TrainInput):
-    trainSize_ = int(inp.train_size)
-    dataset = inp.filename
-    df = ai_model.train_model(dataset, (trainSize_/100))
+    try:
+        trainSize_ = int(inp.train_size)
+        dataset = inp.filename
+        df = ai_model.train_model(dataset, (trainSize_/100), inp.g_set)
 
-    return df
+        return df
+    except Exception as e:
+        return e
+
+@app.post('/train/savemodel')
+def savemodel():
+    return "saving model...."
+    
+@app.post('/train/downloadmodel')
+def downloadmodel():
+    return "downloading...."
+
 
 @app.get('/predict', response_class=HTMLResponse)
 def predict(request: Request):

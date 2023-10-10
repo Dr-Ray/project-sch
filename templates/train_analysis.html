@@ -3,10 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Train Analysis</title>
+    <title>Model | Train | Training Analysis</title>
+    <link rel="stylesheet" href="{{url_for('stylesheet', path='/font-awesome.css')}}">
+    <link rel="stylesheet" href="{{url_for('stylesheet', path='/bootstrap.css')}}">
+    <link rel="stylesheet" href="{{url_for('stylesheet', path='/styles.css')}}">
     <script type="text/javascript" src="{{url_for('js', path='/jquery.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('js', path='/index.js')}}"></script>
+    <style>
+        .thick {
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <h1>Training analysis</h1>
+    <div class="d-col" id="r-app">
+        <div class="nav">
+            <div class="logo p-2 text-xl">&#9776;</div>
+            <a href="/">
+                <div class="p-2 text-xl">Training Analysis</div>
+            </a>
+        </div>
+        <div class="sidebar hidden"></div>
+        <div class="content container-fluid" id="main">
+            <div class="">
+                <h2>Model {{model}}</h2>
+            </div>
+
+            <h3>Report</h3>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <th>Class</th>
+                        <th>Precision</th>
+                        <th>Recall</th>
+                        <th>F1 score</th>
+                        <th>Support</th>
+                    </thead>
+                    <tbody>
+                        {% for row in report %}
+                            <tr>
+                                {% if(row != 'accuracy') %}
+                                    <td>{{row}}</td>
+                                    <td>{{report[row]['precision']}}</td>
+                                    <td>{{report[row]['recall']}}</td>
+                                    <td>{{report[row]['f1-score']}}</td>
+                                    <td>{{report[row]['support']}}</td>
+                                {% else %}
+                                    <td>{{row}}</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{report[row]}}</td>
+                                    <td></td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Save model</h3>
+            <div class="row model_save">
+                <div class="col-md-4">
+                    <button type="button" class="btn btn-primary" id="model_save">
+                        <i class="fa fa-save"></i>
+                        Save model
+                    </button>
+                    <button type="button" class="btn btn-success" id="download" style="background-color:#28a745;">
+                        <i class="fa fa-download"></i>
+                        Download
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div><br>
+    <br><br>
+    <script>
+        $('#download').hide();
+        let parent_ = getElement('#main');
+        getElement('#model_save').addEventListener('click', (e)=> {
+            getElement('#model_save').innerHTML = '<i class="fa fa-spin fa-gear"></i>';
+            network.xhr_request({
+                method:"POST",
+                url:"/train/savemodel",
+                data:''
+
+            }, (resp, err)=> {
+                // var response = JSON.parse(resp);
+                console.log(resp);
+                notification(parent_, "Saving model", 3000, "success");
+                $('#model_save').hide();
+                $('#download').show(1000);
+                // if(response.success) {
+                //     notification(parent_, "", 3000, "success");
+                //     getElement('#download').classList.add('open');
+
+                // }else{
+                //     notification(parent_, response.message, 5000, "warning");
+                // }
+            })
+        });
+
+        getElement('#download').addEventListener('click', (e)=> {
+            network.xhr_request(req_body, (resp, err)=> {
+                var response = JSON.parse(resp);
+                console.log(response);
+                // if(response.success) {
+                    
+                // }else{
+                //     notification(parent_, response.message, 5000, "warning");
+                // }
+            })
+        });
+    </script>
 </body>
 </html>
