@@ -8,8 +8,6 @@ from sklearn.metrics import accuracy_score
 # Models
 import tensorflow as tf
 from sklearn.svm import SVC
-# from sklearn.naive_bayes import GaussianNB
-# from sklearn.neighbors import KNeighborsClassifier
 
 # Processing....
 from tensorflow.keras.utils import to_categorical
@@ -53,7 +51,7 @@ class SVM_Model:
 
     def report(self):
         self.model_report = classification_report(self.y_test, self.y_pred, output_dict=True)
-        print(classification_report(self.y_test, self.y_pred))
+
 
 # class CNN_Model:
 #     def __init__(self):
@@ -85,16 +83,12 @@ class SVM_Model:
 
 class ANN_Model:
     def __init__(self, input_dim, outputdim):
-        self.train_percent = train_percent
+        self.outputdim = outputdim
         self.model = tf.keras.Sequential([
-            tf.keras.layers.Dense(512, activation='relu', input_dim=input_dim),
-            tf.keras.layers.Dense(256, activation='relu'),
+            tf.keras.layers.Dense(64, activation='relu', input_dim=input_dim),
             tf.keras.layers.Dropout(0.2),
-            tf.keras.layers.Dense(64, activation='relu'),
             tf.keras.layers.Dense(32, activation='relu'),
-            tf.keras.layers.Dropout(0.2),
-            tf.keras.layers.Dense(16, activation='relu'),
-            tf.keras.layers.Dense(outputdim, activation='softmax')
+            tf.keras.layers.Dense(self.outputdim, activation='softmax')
         ])
     
     def split_dataset(self, train_percent):
@@ -111,15 +105,15 @@ class ANN_Model:
         self.x_train = s.fit_transform(x_train)
         self.x_test = s.fit_transform(x_test)
 
-        self.y_train = to_categorical(y_train, 4)
-        self.y_test = to_categorical(y_test, 4)
+        self.y_train = to_categorical(y_train, self.outputdim)
+        self.y_test = to_categorical(y_test, self.outputdim)
 
     def _optimizer(self, optim, learning_rate):
-        if(lower(optim) == "adam"):
+        if(optim.lower() == "adam"):
             self.optimizer = tf.keras.optimizers.Adam(learning_rate)
             return self.optimizer
 
-        if(lower(optim) == "adamax"):
+        if(optim.lower() == "adamax"):
             self.optimizer = tf.keras.optimizers.Adamax(learning_rate)
             return self.optimizer
 
@@ -132,30 +126,23 @@ class ANN_Model:
             self.x_train, self.y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2, verbose=1
         )
 
-        self.plot_history()
-
-        evl = self.model_evaluation()
-        test_res = self._test()
-
-        return {"model evaluation":evl, "model test":tes_res}
+        # self.plot_history ()
+        self.model_evaluation()
+        self._test()
     
     def model_evaluation(self):
-        loss, accuracy = self.model.evaluate(self.x_test, self.y_test, verbose=1)
+        self.loss, self.accuracy = self.model.evaluate(self.x_test, self.y_test, verbose=1)
 
-        return {"Model Loss":(loss*100), "Accuracy": (accuracy*100)}
-
-    
     def _test(self):
-        predictions = self.model.predict(self.x_test)
-        rounded_predictions = np.argmax(predictions, axis=1)
-        labels = np.argmax(self.y_test, axis=1)
+        self.y_pred = self.model.predict(self.x_test)
+        self.rounded_predictions = np.argmax(self.y_pred, axis=1)
+        self.labels = np.argmax(self.y_test, axis=1)
 
-        return {
-            "True class":labels, 
-            "Predicted class":rounded_predictions, 
-            "report": (classification_report(self.y_test, self.y_pred, output_dict=True))
-        }
+        self.model_report = classification_report(self.y_test, np.round(self.y_pred), output_dict=True)
     
+    def _getreport(self):
+        return self.model_report
+
     def plot_history(self):
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
         ax1.plot(self.history.history['loss'], label='loss')

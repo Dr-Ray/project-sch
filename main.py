@@ -10,7 +10,7 @@ from typing import Annotated
 from simulation_model import Simulation
 from new_model import Mymodel
 from utility import Utility
-
+from secrets import token_hex
 
 class simRealreq(BaseModel):
     channels : int
@@ -40,6 +40,7 @@ my_utility = Utility()
 
 app = FastAPI()
 app.mount("/stylesheet", StaticFiles(directory="stylesheet"), name="stylesheet")
+app.mount("/saved_model", StaticFiles(directory="saved_model"), name="saved_model")
 app.mount("/images", StaticFiles(directory="images"), name="images")
 app.mount("/fonts", StaticFiles(directory="fonts"), name="fonts")
 app.mount("/js", StaticFiles(directory="js"), name="js")
@@ -93,15 +94,15 @@ def train_percent(inp: TrainInput):
 
         return df
     except Exception as e:
+        print(e)
         return e
 
 @app.post('/train/savemodel')
 def savemodel():
-    return "saving model...."
-    
-@app.post('/train/downloadmodel')
-def downloadmodel():
-    return "downloading...."
+    bin_file = ai_model.save_model(token_hex(10))
+    return {
+        "link":f"{bin_file[0]}"
+    }
 
 
 @app.get('/predict', response_class=HTMLResponse)

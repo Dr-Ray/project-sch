@@ -49,15 +49,14 @@ class Mymodel:
         self.model_type = model
 
     def save_model(self, model):
-        joblib.dump(self.model, f"./saved_model/{model}")
-        return model
+        bin_file = joblib.dump(self.model, f"./saved_model/{model}")
+        return bin_file
     
     def load_saved_model(self, model_name):
-        self.model = joblib.load('./saved_model/'+model_name)
-
+        self.model = joblib.load(f"./saved_model/{model_name}")
         return model_name
     
-    def train_model(self, dataset, percentage, g_set=4):
+    def train_model(self, dataset, percentage, g_set=4, learning_rate=0.0001):
         if(self.model_type.lower() == "svm"):
             df = self.read_dataset(dataset)
 
@@ -73,37 +72,38 @@ class Mymodel:
             df = self.read_dataset(dataset)
             dataset = df['dataframe']
             
-            self.model = ANN_Model((len(dataset)-1), g_set)
-            resp = self.model.train(dataset, percentage, "adam", 0.001, 100, 100)
+            self.model = ANN_Model(len(dataset.columns)-1, g_set)
+
+            resp = self.model.train(dataset, percentage, "adam", learning_rate, 100, 100)
 
             self.report = self.model._getreport()
             
             return self.model._getreport()
         
-        if(self.model_type.lower() == "cnn"):
-            df = self.read_dataset(dataset)
-            dataset = df['dataframe']
-            return "Hello"
+        # if(self.model_type.lower() == "cnn"):
+        #     df = self.read_dataset(dataset)
+        #     dataset = df['dataframe']
+        #     return "Hello"
         
-        if(self.model_type.lower() == "cnn_svm"):
-            df = self.read_dataset(dataset)
-            dataset = df['dataframe']
-            return "Hello"
+        # if(self.model_type.lower() == "cnn_svm"):
+        #     df = self.read_dataset(dataset)
+        #     dataset = df['dataframe']
+        #     return "Hello"
         
-        if(self.model_type.lower() == "cnn_ann"):
-            df = self.read_dataset(dataset)
-            dataset = df['dataframe']
-            return "Hello"
+        # if(self.model_type.lower() == "cnn_ann"):
+        #     df = self.read_dataset(dataset)
+        #     dataset = df['dataframe']
+        #     return "Hello"
         
-        if(self.model_type.lower() == "cnn_ann_svm"):
-            df = self.read_dataset(dataset)
-            dataset = df['dataframe']
-            return "Hello"
+        # if(self.model_type.lower() == "cnn_ann_svm"):
+        #     df = self.read_dataset(dataset)
+        #     dataset = df['dataframe']
+        #     return "Hello"
         
-        if(self.model_type.lower() == "ann_svm"):
-            df = self.read_dataset(dataset)
-            dataset = df['dataframe']
-            return "Hello"
+        # if(self.model_type.lower() == "ann_svm"):
+        #     df = self.read_dataset(dataset)
+        #     dataset = df['dataframe']
+        #     return "Hello"
         else:
             return "No model selected for Training"
     

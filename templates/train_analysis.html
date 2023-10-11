@@ -13,6 +13,10 @@
         .thick {
             font-weight: bold;
         }
+        .btn-success{
+            background-color:#28a745 !important;
+            border-color: #28a745 !important;
+        }
     </style>
 </head>
 <body>
@@ -63,14 +67,10 @@
 
             <h3>Save model</h3>
             <div class="row model_save">
-                <div class="col-md-4">
+                <div class="col-md-4" id="ser">
                     <button type="button" class="btn btn-primary" id="model_save">
                         <i class="fa fa-save"></i>
                         Save model
-                    </button>
-                    <button type="button" class="btn btn-success" id="download" style="background-color:#28a745;">
-                        <i class="fa fa-download"></i>
-                        Download
                     </button>
                 </div>
             </div>
@@ -82,37 +82,23 @@
         $('#download').hide();
         let parent_ = getElement('#main');
         getElement('#model_save').addEventListener('click', (e)=> {
-            getElement('#model_save').innerHTML = '<i class="fa fa-spin fa-gear"></i>';
             network.xhr_request({
                 method:"POST",
                 url:"/train/savemodel",
                 data:''
-
             }, (resp, err)=> {
-                // var response = JSON.parse(resp);
-                console.log(resp);
-                notification(parent_, "Saving model", 3000, "success");
+                let response = JSON.parse(resp), link = `${response.link.split('.')[1]}`;
+
+                notification(parent_, "Saved model", 3000, "success");
                 $('#model_save').hide();
-                $('#download').show(1000);
-                // if(response.success) {
-                //     notification(parent_, "", 3000, "success");
-                //     getElement('#download').classList.add('open');
+                var dbtn = addElement('a', getElement('#ser'), {
+                    "class":"btn btn-success",
+                    "href":link,
+                    "download":"download",
+                    "id":"download"
+                });
 
-                // }else{
-                //     notification(parent_, response.message, 5000, "warning");
-                // }
-            })
-        });
-
-        getElement('#download').addEventListener('click', (e)=> {
-            network.xhr_request(req_body, (resp, err)=> {
-                var response = JSON.parse(resp);
-                console.log(response);
-                // if(response.success) {
-                    
-                // }else{
-                //     notification(parent_, response.message, 5000, "warning");
-                // }
+                dbtn.innerHTML = `<i class="fa fa-download"></i> Download model`;
             })
         });
     </script>
